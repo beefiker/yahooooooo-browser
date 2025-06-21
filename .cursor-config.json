@@ -1,0 +1,31 @@
+{
+  "rules": [
+    "This is a C++ CEF-based browser project for macOS",
+    "Use C++17 standard and modern C++ practices",
+    "All CEF-related code should use CefRefPtr for memory management",
+    "Follow the phase-based development approach outlined in build_plans.md",
+    "Use @cursor:phase-N tags to organize code by development phase",
+    "Prioritize browser security and privacy features",
+    "Use emojis in console output for better debugging experience"
+  ],
+  "tags": {
+    "@cursor:phase-1": "Bootstrap phase - basic structure and CEF setup",
+    "@cursor:phase-2": "UI core features - navigation and basic browser functions",
+    "@cursor:phase-3": "Browser shell features - tabs, bookmarks, history",
+    "@cursor:phase-4": "Power features - incognito, blocking, preferences"
+  },
+  "directories": {
+    "src": "Main source code directory with all C++ implementation files",
+    "src/resources": "Static resources like icons, HTML templates, etc.",
+    "build": "Build output directory",
+    "cef_build": "CEF framework build directory"
+  },
+  "files": {
+    "build_plans.md": "Comprehensive project roadmap and documentation",
+    "CMakeLists.txt": "Main build configuration",
+    "src/main.cpp": "Application entry point",
+    "src/app.h/.cpp": "Main CEF application class",
+    "src/client.h/.cpp": "CEF client handler coordinating all events",
+    "src/handler_*.h/.cpp": "Specialized event handlers for different aspects"
+  }
+}
