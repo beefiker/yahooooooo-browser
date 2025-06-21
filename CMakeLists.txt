@@ -39,50 +39,27 @@ if(EXISTS "${CEF_ROOT}/Release" OR EXISTS "${CEF_ROOT}/Debug")
         src/resources/multiprocess_test.html
     )
 
-    # Source files for main browser
+    # Source files for main browser - CEF 137 compliant
     set(BROWSER_SRCS
         src/main.cpp
         src/app.cpp
         src/client.cpp
-        src/handler_life.cpp
-        src/handler_load.cpp
-        src/handler_request.cpp
-        src/app_renderer.cpp
-        src/app_other.cpp
     )
     
     # Add macOS-specific files
     if(APPLE)
-        list(APPEND BROWSER_SRCS src/mac_window.mm)
+        list(APPEND BROWSER_SRCS src/client_mac.mm)
     endif()
 
     # Headers
     set(BROWSER_HEADERS
         src/app.h
         src/client.h
-        src/handler_life.h
-        src/handler_load.h
-        src/handler_request.h
-        src/app_renderer.h
-        src/app_other.h
     )
 
-    # Helper executable sources for macOS - separate for different process types
-    set(BROWSER_HELPER_RENDERER_SRCS
-        src/app_renderer.cpp
-    )
-    
-    set(BROWSER_HELPER_OTHER_SRCS
-        src/app_other.cpp
-    )
-
-    # Helper main sources - different for renderer vs other processes
+    # Helper executable sources for macOS - CEF 137 compliant
     set(BROWSER_HELPER_MAIN_SRCS
         src/helper_main.cpp
-    )
-    
-    set(BROWSER_HELPER_MINIMAL_MAIN_SRCS
-        src/helper_main_minimal.cpp
     )
 
     # Resources
@@ -94,32 +71,6 @@ if(EXISTS "${CEF_ROOT}/Release" OR EXISTS "${CEF_ROOT}/Debug")
     set(BROWSER_TARGET "yahooooooo-browser")
     set(BROWSER_HELPER_TARGET "yahooooooo-browser_Helper")
     set(BROWSER_HELPER_OUTPUT_NAME "yahooooooo-browser Helper")
-
-    # Create shared library for browser logic
-    add_library(shared STATIC
-        src/browser_window.cpp
-        src/browser_window.h
-    )
-    
-    # Set properties for shared library
-    target_include_directories(shared PUBLIC 
-        ${CEF_INCLUDE_PATH}
-        src
-    )
-    
-    # Link the CEF framework for macOS
-    if(APPLE)
-        target_link_libraries(shared 
-            libcef_dll_wrapper
-            ${CEF_STANDARD_LIBS}
-            "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-        )
-    else()
-        target_link_libraries(shared 
-            libcef_dll_wrapper
-            ${CEF_STANDARD_LIBS}
-        )
-    endif()
 
     # Output path for the main app bundle
     set(BROWSER_APP "${CMAKE_CURRENT_BINARY_DIR}/${BROWSER_TARGET}.app")
@@ -135,19 +86,17 @@ if(EXISTS "${CEF_ROOT}/Release" OR EXISTS "${CEF_ROOT}/Debug")
     SET_EXECUTABLE_TARGET_PROPERTIES(${BROWSER_TARGET})
     
     # Add dependencies and linking
-    add_dependencies(${BROWSER_TARGET} shared libcef_dll_wrapper)
+    add_dependencies(${BROWSER_TARGET} libcef_dll_wrapper)
     
     # Link the CEF framework for macOS
     if(APPLE)
         target_link_libraries(${BROWSER_TARGET} 
-            shared 
             libcef_dll_wrapper
             ${CEF_STANDARD_LIBS}
             "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
         )
     else()
         target_link_libraries(${BROWSER_TARGET} 
-            shared 
             libcef_dll_wrapper
             ${CEF_STANDARD_LIBS}
         )
@@ -196,15 +145,8 @@ if(EXISTS "${CEF_ROOT}/Release" OR EXISTS "${CEF_ROOT}/Debug")
         string(REPLACE "\${BUNDLE_ID_SUFFIX}" "${_plist_suffix}" _plist_contents ${_plist_contents})
         file(WRITE ${_helper_info_plist} ${_plist_contents})
 
-        # Create Helper executable target - use different sources based on helper type
-        if("${_name_suffix}" STREQUAL "")
-            # TEMPORARY: Use minimal main for renderer helper too to avoid V8 issues
-            # TODO: Re-enable renderer-specific code once linking is fixed
-            add_executable(${_helper_target} MACOSX_BUNDLE ${BROWSER_HELPER_MINIMAL_MAIN_SRCS})
-        else()
-            # Other helpers (GPU, Alerts, Plugin) - use minimal main without V8
-            add_executable(${_helper_target} MACOSX_BUNDLE ${BROWSER_HELPER_MINIMAL_MAIN_SRCS})
-        endif()
+        # Create Helper executable target - CEF 137 compliant
+        add_executable(${_helper_target} MACOSX_BUNDLE ${BROWSER_HELPER_MAIN_SRCS})
         SET_EXECUTABLE_TARGET_PROPERTIES(${_helper_target})
         add_dependencies(${_helper_target} libcef_dll_wrapper)
         target_link_libraries(${_helper_target} 

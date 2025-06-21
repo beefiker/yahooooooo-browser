@@ -19,82 +19,57 @@
 class Client : public CefClient,
                public CefDisplayHandler,
                public CefLifeSpanHandler,
-               public CefLoadHandler,
-               public CefRequestHandler {
+               public CefLoadHandler {
 public:
-    Client();
-    ~Client() = default;
+    explicit Client(bool is_alloy_style);
+    ~Client() override;
+
+    // Provide access to the single global instance of this object.
+    static Client* GetInstance();
 
     // CefClient methods
     CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
     CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
-    CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
-    // Remove render handler for windowed mode
-    CefRefPtr<CefRenderHandler> GetRenderHandler() override { return nullptr; }
 
     // CefDisplayHandler methods
     void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) override;
-    void OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url) override;
 
-    // CefLifeSpanHandler methods - with correct 13 parameters including popup_id
-    bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
-                      CefRefPtr<CefFrame> frame,
-                      int popup_id,
-                      const CefString& target_url,
-                      const CefString& target_frame_name,
-                      WindowOpenDisposition target_disposition,
-                      bool user_gesture,
-                      const CefPopupFeatures& popupFeatures,
-                      CefWindowInfo& windowInfo,
-                      CefRefPtr<CefClient>& client,
-                      CefBrowserSettings& settings,
-                      CefRefPtr<CefDictionaryValue>& extra_info,
-                      bool* no_javascript_access) override;
-
+    // CefLifeSpanHandler methods
     void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
     bool DoClose(CefRefPtr<CefBrowser> browser) override;
     void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
 
     // CefLoadHandler methods
-    void OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, TransitionType transition_type) override;
-    void OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode) override;
     void OnLoadError(CefRefPtr<CefBrowser> browser,
                     CefRefPtr<CefFrame> frame,
                     ErrorCode errorCode,
                     const CefString& errorText,
                     const CefString& failedUrl) override;
 
-    // CefRequestHandler methods
-    bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
-                       CefRefPtr<CefFrame> frame,
-                       CefRefPtr<CefRequest> request,
-                       bool user_gesture,
-                       bool is_redirect) override;
+    void ShowMainWindow();
 
-    // Multi-process communication
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-                                 CefRefPtr<CefFrame> frame,
-                                 CefProcessId source_process,
-                                 CefRefPtr<CefProcessMessage> message) override;
-
-    // Get the main browser instance
-    CefRefPtr<CefBrowser> GetMainBrowser() { return main_browser_; }
-    
-    // Close all browsers and shut down
+    // Request that all existing browser windows close.
     void CloseAllBrowsers(bool force_close);
-    
-    // Test inter-process communication
-    void TestInterProcessCommunication();
+
+    bool IsClosing() const { return is_closing_; }
 
 private:
-    // The main browser window
-    CefRefPtr<CefBrowser> main_browser_;
-    
-    // List of all browsers
+    // Platform-specific implementation.
+    void PlatformTitleChange(CefRefPtr<CefBrowser> browser,
+                             const CefString& title);
+    void PlatformShowWindow(CefRefPtr<CefBrowser> browser);
+
+    // True if this client is Alloy style, otherwise Chrome style.
+    const bool is_alloy_style_;
+
+    // List of existing browser windows. Only accessed on the CEF UI thread.
     typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
     BrowserList browser_list_;
 
+    bool is_closing_ = false;
+
+    // Include the default reference counting implementation.
     IMPLEMENT_REFCOUNTING(Client);
     DISALLOW_COPY_AND_ASSIGN(Client);
 }; 
