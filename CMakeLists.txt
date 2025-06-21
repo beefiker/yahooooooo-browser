@@ -19,7 +19,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 
 # CEF variables
-set(CEF_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/cef_build/cef")
+set(CEF_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/cef_build")
 
 # Check if CEF is built
 if(EXISTS "${CEF_ROOT}/Release" OR EXISTS "${CEF_ROOT}/Debug")
@@ -36,7 +36,7 @@ if(EXISTS "${CEF_ROOT}/Release" OR EXISTS "${CEF_ROOT}/Debug")
 
     # Include shared resources
     set(SHARED_RESOURCES_SRCS
-        src/resources/test.html
+        src/resources/multiprocess_test.html
     )
 
     # Source files for main browser
@@ -47,6 +47,8 @@ if(EXISTS "${CEF_ROOT}/Release" OR EXISTS "${CEF_ROOT}/Debug")
         src/handler_life.cpp
         src/handler_load.cpp
         src/handler_request.cpp
+        src/app_renderer.cpp
+        src/app_other.cpp
     )
     
     # Add macOS-specific files
@@ -61,17 +63,26 @@ if(EXISTS "${CEF_ROOT}/Release" OR EXISTS "${CEF_ROOT}/Debug")
         src/handler_life.h
         src/handler_load.h
         src/handler_request.h
+        src/app_renderer.h
+        src/app_other.h
     )
 
-    # Helper executable sources for macOS (don't include app.cpp - only for main process)
-    set(BROWSER_HELPER_SRCS
-        src/app_other_minimal.cc
-        src/app_renderer_minimal.cc
+    # Helper executable sources for macOS - separate for different process types
+    set(BROWSER_HELPER_RENDERER_SRCS
+        src/app_renderer.cpp
+    )
+    
+    set(BROWSER_HELPER_OTHER_SRCS
+        src/app_other.cpp
     )
 
-    # Simple helper main that doesn't use App class
+    # Helper main sources - different for renderer vs other processes
     set(BROWSER_HELPER_MAIN_SRCS
         src/helper_main.cpp
+    )
+    
+    set(BROWSER_HELPER_MINIMAL_MAIN_SRCS
+        src/helper_main_minimal.cpp
     )
 
     # Resources
@@ -149,10 +160,11 @@ if(EXISTS "${CEF_ROOT}/Release" OR EXISTS "${CEF_ROOT}/Debug")
     )
 
     # Use sandbox if available
-    if(USE_SANDBOX)
-        ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-        target_link_libraries(${BROWSER_TARGET} cef_sandbox_lib)
-    endif()
+    # DISABLED: Sandbox library causes symbol issues with CEF 137
+    # if(USE_SANDBOX)
+    #     ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
+    #     target_link_libraries(${BROWSER_TARGET} cef_sandbox_lib)
+    # endif()
 
     # Copy the CEF framework into the Frameworks directory
     add_custom_command(
@@ -184,8 +196,15 @@ if(EXISTS "${CEF_ROOT}/Release" OR EXISTS "${CEF_ROOT}/Debug")
         string(REPLACE "\${BUNDLE_ID_SUFFIX}" "${_plist_suffix}" _plist_contents ${_plist_contents})
         file(WRITE ${_helper_info_plist} ${_plist_contents})
 
-        # Create Helper executable target - use helper_main.cpp instead of main.cpp
-        add_executable(${_helper_target} MACOSX_BUNDLE ${BROWSER_HELPER_MAIN_SRCS} ${BROWSER_HELPER_SRCS})
+        # Create Helper executable target - use different sources based on helper type
+        if("${_name_suffix}" STREQUAL "")
+            # TEMPORARY: Use minimal main for renderer helper too to avoid V8 issues
+            # TODO: Re-enable renderer-specific code once linking is fixed
+            add_executable(${_helper_target} MACOSX_BUNDLE ${BROWSER_HELPER_MINIMAL_MAIN_SRCS})
+        else()
+            # Other helpers (GPU, Alerts, Plugin) - use minimal main without V8
+            add_executable(${_helper_target} MACOSX_BUNDLE ${BROWSER_HELPER_MINIMAL_MAIN_SRCS})
+        endif()
         SET_EXECUTABLE_TARGET_PROPERTIES(${_helper_target})
         add_dependencies(${_helper_target} libcef_dll_wrapper)
         target_link_libraries(${_helper_target} 
@@ -198,9 +217,11 @@ if(EXISTS "${CEF_ROOT}/Release" OR EXISTS "${CEF_ROOT}/Debug")
             OUTPUT_NAME ${_helper_output_name}
         )
 
-        if(USE_SANDBOX)
-            target_link_libraries(${_helper_target} cef_sandbox_lib)
-        endif()
+        # Use sandbox if available
+        # DISABLED: Sandbox library causes symbol issues with CEF 137
+        # if(USE_SANDBOX)
+        #     target_link_libraries(${_helper_target} cef_sandbox_lib)
+        # endif()
 
         # Add the Helper as a dependency of the main executable target
         add_dependencies(${BROWSER_TARGET} "${_helper_target}")

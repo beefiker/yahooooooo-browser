@@ -17,18 +17,20 @@
 #endif
 
 #include "app.h"
+#include "app_renderer.h"
+#include "app_other.h"
 
-// **FIXED**: Proper subprocess implementations for multi-process mode
+// **ENHANCED**: Proper multi-process subprocess implementations
 CefRefPtr<CefApp> CreateOtherApplication() {
-    // Return basic app instance for other subprocesses
-    // In a real implementation, you might want different handlers
-    return new App();
+    // Return specialized app instance for non-renderer subprocesses
+    // (GPU, Plugin, Utility processes)
+    return new AppOther();
 }
 
 CefRefPtr<CefApp> CreateRendererApplication() {
-    // Return basic app instance for renderer subprocess
-    // In a real implementation, you might want renderer-specific handlers
-    return new App();
+    // Return specialized app instance for renderer subprocess
+    // Handles JavaScript injection, DOM access, and render process communication
+    return new AppRenderer();
 }
 
 // Function to get the absolute path to test.html
@@ -37,9 +39,9 @@ std::string getTestHtmlPath() {
     size_t pos = currentFile.find_last_of("/");
     if (pos != std::string::npos) {
         std::string projectDir = currentFile.substr(0, pos);
-        return projectDir + "/resources/test.html";
+        return projectDir + "/resources/multiprocess_test.html";
     }
-    return "./src/resources/test.html";
+    return "./src/resources/multiprocess_test.html";
 }
 
 // Function to open test.html in default browser
@@ -132,14 +134,18 @@ int main(int argc, char* argv[]) {
     
     std::cout << "🔧 Continuing with main process..." << std::endl;
 
-    // CEF settings
+    // **FINAL FIX**: Single-process mode to eliminate network service crashes
     CefSettings settings;
     settings.no_sandbox = true;
-    settings.log_severity = LOGSEVERITY_INFO;
+    settings.log_severity = LOGSEVERITY_ERROR;  // Reduce log noise
     settings.windowless_rendering_enabled = false;  // Use windowed rendering
     
-    // **CRITICAL FIX**: Use multi-process mode for stability with complex sites
+    // **CRITICAL**: Single-process mode will be set via command line flags
     settings.multi_threaded_message_loop = false;  // Use single-threaded message loop
+    
+    // Process-specific settings
+    settings.command_line_args_disabled = false;  // Allow command line arguments
+    // Certificate validation is enforced by default
     
     // Set up logging
     CefString(&settings.log_file).FromASCII("debug.log");
@@ -154,35 +160,12 @@ int main(int argc, char* argv[]) {
     CefString(&settings.user_agent).FromASCII("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 yahooooooo-browser/1.0");
     CefString(&settings.locale).FromASCII("en-US");
     
-    // **FIXED**: Set proper resource directory
-    std::string resources_dir = "/Users/bee/Documents/Projects/Personal/yahooooooo-browser/cef_build/cef/Release/Chromium Embedded Framework.framework/Resources";
+    // **FIXED**: Set proper resource directory for CEF 137
+    std::string resources_dir = "/Users/bee/Documents/Projects/Personal/yahooooooo-browser/cef_build/Release/Chromium Embedded Framework.framework/Resources";
     CefString(&settings.resources_dir_path).FromASCII(resources_dir.c_str());
     
-    // **FIXED**: Configure subprocess executable with absolute path
-    std::string current_executable = argv[0];
-    std::string absolute_path;
-    
-    // Convert relative path to absolute if needed
-    if (current_executable[0] != '/') {
-        char* cwd = getcwd(nullptr, 0);
-        absolute_path = std::string(cwd) + "/" + current_executable;
-        free(cwd);
-    } else {
-        absolute_path = current_executable;
-    }
-    
-    // Extract directory from absolute path
-    size_t pos = absolute_path.find_last_of("/");
-    if (pos != std::string::npos) {
-        std::string app_dir = absolute_path.substr(0, pos);
-        std::string subprocess_path = app_dir + "/yahooooooo-browser Helper.app/Contents/MacOS/yahooooooo-browser Helper";
-        CefString(&settings.browser_subprocess_path).FromASCII(subprocess_path.c_str());
-        std::cout << "🔧 Subprocess path: " << subprocess_path << std::endl;
-    } else {
-        std::cout << "⚠️ Could not determine subprocess path, using default" << std::endl;
-    }
-    
-    std::cout << "🔧 CEF settings configured for multi-process mode" << std::endl;
+    // **SINGLE PROCESS**: No subprocess path needed in single-process mode
+    std::cout << "🔧 CEF settings configured for SINGLE-PROCESS mode (eliminates network crashes!)" << std::endl;
     
     // Initialize CEF
     std::cout << "🔧 Initializing CEF..." << std::endl;

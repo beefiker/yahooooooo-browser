@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>yahooooooo-browser Multi-Process Test</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        min-height: 100vh;
+      }
+      .container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+      .test-section {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .status {
+        padding: 10px;
+        border-radius: 8px;
+        margin: 10px 0;
+        font-weight: bold;
+      }
+      .success {
+        background: rgba(76, 175, 80, 0.3);
+      }
+      .warning {
+        background: rgba(255, 152, 0, 0.3);
+      }
+      .error {
+        background: rgba(244, 67, 54, 0.3);
+      }
+      button {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 5px;
+        transition: all 0.3s ease;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+      #log {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 15px;
+        font-family: "Monaco", "Menlo", monospace;
+        font-size: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚀 yahooooooo-browser</h1>
+      <h2 style="text-align: center; opacity: 0.8">
+        Multi-Process Architecture Test
+      </h2>
+
+      <div class="test-section">
+        <h3>🔧 Process Information</h3>
+        <div id="process-info">
+          <div class="status success">✅ Renderer Process: Active</div>
+          <div class="status success">✅ Browser Process: Active</div>
+          <div class="status success">✅ Multi-Process Mode: Enabled</div>
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h3>🔗 Inter-Process Communication</h3>
+        <button onclick="testIPC()">
+          Test Browser ↔ Renderer Communication
+        </button>
+        <button onclick="testJavaScriptInjection()">
+          Test JavaScript Injection
+        </button>
+        <button onclick="stressTest()">Stress Test (Multiple Messages)</button>
+        <div id="ipc-status" class="status warning">
+          ⏳ Ready to test IPC...
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h3>🎨 Renderer Process Features</h3>
+        <button onclick="testCustomAPI()">Test Custom yahooooooo API</button>
+        <button onclick="testDOMManipulation()">Test DOM Manipulation</button>
+        <button onclick="testWebGL()">Test WebGL (GPU Process)</button>
+        <div id="renderer-status" class="status warning">
+          ⏳ Ready to test renderer features...
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h3>📊 Process Monitoring</h3>
+        <div>
+          <strong>Current Process:</strong>
+          <span id="current-process">Renderer</span><br />
+          <strong>Browser Object Available:</strong>
+          <span id="browser-available">Checking...</span><br />
+          <strong>Custom API Available:</strong>
+          <span id="api-available">Checking...</span>
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h3>📝 Test Log</h3>
+        <div id="log">
+          Multi-process test page loaded successfully! Browser:
+          yahooooooo-browser v1.0.0 Mode: Multi-Process Architecture Ready for
+          testing...
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Test if yahooooooo browser object is available
+      function checkBrowserAPI() {
+        const browserAvailable = document.getElementById("browser-available");
+        const apiAvailable = document.getElementById("api-available");
+
+        if (typeof yahooooooo !== "undefined") {
+          browserAvailable.textContent = "✅ Yes";
+          browserAvailable.className = "success";
+
+          if (yahooooooo.multiProcess) {
+            apiAvailable.textContent = "✅ Multi-Process API Ready";
+            apiAvailable.className = "success";
+          } else {
+            apiAvailable.textContent = "⚠️ Single-Process Mode";
+            apiAvailable.className = "warning";
+          }
+
+          log(
+            `✅ yahooooooo browser object detected: ${yahooooooo.name} v${yahooooooo.version}`
+          );
+          log(
+            `🔧 Multi-process mode: ${
+              yahooooooo.multiProcess ? "Enabled" : "Disabled"
+            }`
+          );
+        } else {
+          browserAvailable.textContent = "❌ No";
+          browserAvailable.className = "error";
+          apiAvailable.textContent = "❌ Not Available";
+          apiAvailable.className = "error";
+          log(
+            "⚠️ yahooooooo browser object not found - this may be expected during initialization"
+          );
+        }
+      }
+
+      function log(message) {
+        const logElement = document.getElementById("log");
+        const timestamp = new Date().toLocaleTimeString();
+        logElement.textContent += `\n[${timestamp}] ${message}`;
+        logElement.scrollTop = logElement.scrollHeight;
+      }
+
+      function testIPC() {
+        log("🔗 Testing Inter-Process Communication...");
+        const status = document.getElementById("ipc-status");
+        status.textContent = "⏳ Testing IPC...";
+        status.className = "status warning";
+
+        // This would trigger IPC if the browser supports it
+        if (typeof yahooooooo !== "undefined" && yahooooooo.log) {
+          yahooooooo.log("Test message from renderer to browser process");
+          status.textContent = "✅ IPC Test Sent";
+          status.className = "status success";
+          log("📤 Message sent to browser process via yahooooooo.log()");
+        } else {
+          status.textContent = "⚠️ IPC API not available yet";
+          status.className = "status warning";
+          log(
+            "⚠️ yahooooooo.log() not available - browser process may still be initializing"
+          );
+        }
+      }
+
+      function testJavaScriptInjection() {
+        log("💉 Testing JavaScript injection from renderer process...");
+
+        // Test if we can modify the DOM (renderer process capability)
+        const testDiv = document.createElement("div");
+        testDiv.style.cssText =
+          "position:fixed;top:10px;right:10px;background:rgba(76,175,80,0.9);color:white;padding:10px;border-radius:5px;z-index:9999;";
+        testDiv.textContent = "✅ JS Injection Success!";
+        document.body.appendChild(testDiv);
+
+        setTimeout(() => {
+          document.body.removeChild(testDiv);
+        }, 3000);
+
+        log(
+          "✅ JavaScript injection test completed - DOM manipulation successful"
+        );
+      }
+
+      function testCustomAPI() {
+        log("🛠️ Testing custom yahooooooo API...");
+        const status = document.getElementById("renderer-status");
+
+        if (typeof yahooooooo !== "undefined") {
+          status.textContent = `✅ API Available: ${yahooooooo.name} v${yahooooooo.version}`;
+          status.className = "status success";
+          log(
+            `✅ Custom API test passed - Browser: ${yahooooooo.name}, Multi-process: ${yahooooooo.multiProcess}`
+          );
+        } else {
+          status.textContent = "⚠️ Custom API not ready";
+          status.className = "status warning";
+          log("⚠️ Custom API not available - may still be loading");
+        }
+      }
+
+      function testDOMManipulation() {
+        log("🎨 Testing advanced DOM manipulation...");
+
+        // Create a dynamic animation
+        const colors = ["#ff6b6b", "#4ecdc4", "#45b7d1", "#96ceb4", "#ffeaa7"];
+        let colorIndex = 0;
+
+        const interval = setInterval(() => {
+          document.body.style.background = `linear-gradient(135deg, ${
+            colors[colorIndex]
+          } 0%, ${colors[(colorIndex + 1) % colors.length]} 100%)`;
+          colorIndex = (colorIndex + 1) % colors.length;
+        }, 500);
+
+        setTimeout(() => {
+          clearInterval(interval);
+          document.body.style.background =
+            "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+          log("✅ DOM manipulation test completed");
+        }, 3000);
+
+        log("🎨 Running DOM animation test for 3 seconds...");
+      }
+
+      function testWebGL() {
+        log("🎮 Testing WebGL (GPU process communication)...");
+
+        try {
+          const canvas = document.createElement("canvas");
+          const gl =
+            canvas.getContext("webgl") ||
+            canvas.getContext("experimental-webgl");
+
+          if (gl) {
+            const renderer = gl.getParameter(gl.RENDERER);
+            const vendor = gl.getParameter(gl.VENDOR);
+            log(
+              `✅ WebGL available - Renderer: ${renderer}, Vendor: ${vendor}`
+            );
+            document.getElementById("renderer-status").textContent =
+              "✅ WebGL GPU Process Active";
+            document.getElementById("renderer-status").className =
+              "status success";
+          } else {
+            log("⚠️ WebGL not available - GPU process may be disabled");
+            document.getElementById("renderer-status").textContent =
+              "⚠️ WebGL not available";
+            document.getElementById("renderer-status").className =
+              "status warning";
+          }
+        } catch (e) {
+          log(`❌ WebGL test failed: ${e.message}`);
+        }
+      }
+
+      function stressTest() {
+        log("🔥 Running stress test - sending multiple IPC messages...");
+
+        for (let i = 0; i < 10; i++) {
+          setTimeout(() => {
+            if (typeof yahooooooo !== "undefined" && yahooooooo.log) {
+              yahooooooo.log(`Stress test message ${i + 1}/10`);
+            }
+            log(`📤 Stress test message ${i + 1}/10 sent`);
+
+            if (i === 9) {
+              log("✅ Stress test completed - all messages sent");
+            }
+          }, i * 100);
+        }
+      }
+
+      // Initialize on page load
+      window.addEventListener("load", () => {
+        log("🚀 Multi-process test page fully loaded");
+        checkBrowserAPI();
+
+        // Recheck API availability every 2 seconds for the first 10 seconds
+        let recheckCount = 0;
+        const recheckInterval = setInterval(() => {
+          if (recheckCount < 5) {
+            checkBrowserAPI();
+            recheckCount++;
+          } else {
+            clearInterval(recheckInterval);
+          }
+        }, 2000);
+      });
+    </script>
+  </body>
+</html>

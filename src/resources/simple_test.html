@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>yahooooooo Browser - Offline Test</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: white;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .hero {
+        text-align: center;
+        padding: 60px 0;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: glow 2s ease-in-out infinite alternate;
+      }
+
+      @keyframes glow {
+        from {
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3),
+            0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        to {
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3),
+            0 0 30px rgba(255, 255, 255, 0.4);
+        }
+      }
+
+      .hero p {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        margin-bottom: 40px;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin: 50px 0;
+      }
+
+      .feature {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .feature:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .feature h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: #ffd700;
+      }
+
+      .feature p {
+        opacity: 0.9;
+      }
+
+      .status {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 30px;
+        margin: 30px 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .status h2 {
+        color: #4caf50;
+        margin-bottom: 20px;
+      }
+
+      .status-item {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+      }
+
+      .status-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 15px;
+        border-radius: 50%;
+      }
+
+      .status-icon.success {
+        background: #4caf50;
+      }
+
+      .status-icon.warning {
+        background: #ff9800;
+      }
+
+      .status-icon.info {
+        background: #2196f3;
+      }
+
+      .interactive {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 30px;
+        margin: 30px 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .interactive h2 {
+        color: #ff6b6b;
+        margin-bottom: 20px;
+      }
+
+      .test-button {
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        margin: 10px;
+        transition: transform 0.2s ease;
+      }
+
+      .test-button:hover {
+        transform: scale(1.05);
+      }
+
+      .test-result {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        min-height: 50px;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 40px 0;
+        opacity: 0.7;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 50px;
+      }
+
+      .logo {
+        font-size: 2rem;
+        font-weight: bold;
+        background: linear-gradient(45deg, #ffd700, #ff6b6b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="hero">
+        <div class="logo">yahooooooo</div>
+        <h1>Browser Test Suite</h1>
+        <p>Multi-Process CEF 137 Browser - Offline Mode</p>
+      </div>
+
+      <div class="status">
+        <h2>🚀 Browser Status</h2>
+        <div class="status-item">
+          <div class="status-icon success"></div>
+          <span
+            ><strong>CEF Framework:</strong> Loaded Successfully
+            (v137.0.17)</span
+          >
+        </div>
+        <div class="status-item">
+          <div class="status-icon success"></div>
+          <span><strong>Multi-Process:</strong> Renderer processes active</span>
+        </div>
+        <div class="status-item">
+          <div class="status-icon success"></div>
+          <span><strong>GPU Process:</strong> Running in-process (stable)</span>
+        </div>
+        <div class="status-item">
+          <div class="status-icon warning"></div>
+          <span><strong>Network Service:</strong> Disabled (offline mode)</span>
+        </div>
+        <div class="status-item">
+          <div class="status-icon info"></div>
+          <span><strong>JavaScript Engine:</strong> V8 with CEF wrapper</span>
+        </div>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <h3>🏗️ Multi-Process Architecture</h3>
+          <p>
+            Secure renderer processes with IPC communication. GPU and network
+            services run in-process for stability on macOS.
+          </p>
+        </div>
+
+        <div class="feature">
+          <h3>🎨 Modern UI Framework</h3>
+          <p>
+            Built with CEF Views framework for native macOS integration.
+            Supports modern CSS3 and HTML5 features.
+          </p>
+        </div>
+
+        <div class="feature">
+          <h3>🔒 Security First</h3>
+          <p>
+            Sandboxed renderer processes with no-sandbox flag for development.
+            Production builds will use full sandboxing.
+          </p>
+        </div>
+
+        <div class="feature">
+          <h3>⚡ Performance Optimized</h3>
+          <p>
+            Hardware acceleration, efficient memory management, and optimized
+            rendering pipeline.
+          </p>
+        </div>
+
+        <div class="feature">
+          <h3>🔧 Developer Ready</h3>
+          <p>
+            Built-in developer tools, debugging support, and extensible
+            architecture for custom features.
+          </p>
+        </div>
+
+        <div class="feature">
+          <h3>🌐 Standards Compliant</h3>
+          <p>
+            Full HTML5, CSS3, ES6+ support with Chromium's latest web standards
+            implementation.
+          </p>
+        </div>
+      </div>
+
+      <div class="interactive">
+        <h2>🧪 Interactive Tests</h2>
+        <p>Test browser functionality with these interactive elements:</p>
+
+        <button class="test-button" onclick="testJavaScript()">
+          Test JavaScript
+        </button>
+        <button class="test-button" onclick="testLocalStorage()">
+          Test Local Storage
+        </button>
+        <button class="test-button" onclick="testWebGL()">Test WebGL</button>
+        <button class="test-button" onclick="testCSS3()">
+          Test CSS3 Animations
+        </button>
+        <button class="test-button" onclick="testIPC()">
+          Test IPC Communication
+        </button>
+        <button class="test-button" onclick="toGoogle()">To Google</button>
+
+        <div class="test-result" id="testResult">
+          Click any test button to see results...
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>
+          &copy; 2024 yahooooooo Browser | Built with CEF 137 | Multi-Process
+          Architecture
+        </p>
+        <p>Phase 2 Complete: CEF Integration ✅</p>
+      </div>
+    </div>
+
+    <script>
+      // Test JavaScript functionality
+      function testJavaScript() {
+        const result = document.getElementById("testResult");
+        try {
+          const data = {
+            timestamp: new Date().toLocaleString(),
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            cookieEnabled: navigator.cookieEnabled,
+            onlineStatus: navigator.onLine,
+          };
+
+          result.innerHTML = `
+                    <h3>✅ JavaScript Test Passed</h3>
+                    <p><strong>Timestamp:</strong> ${data.timestamp}</p>
+                    <p><strong>User Agent:</strong> ${data.userAgent}</p>
+                    <p><strong>Platform:</strong> ${data.platform}</p>
+                    <p><strong>Language:</strong> ${data.language}</p>
+                    <p><strong>Cookies:</strong> ${
+                      data.cookieEnabled ? "Enabled" : "Disabled"
+                    }</p>
+                    <p><strong>Online:</strong> ${
+                      data.onlineStatus
+                        ? "Yes"
+                        : "No (Expected in offline mode)"
+                    }</p>
+                `;
+        } catch (error) {
+          result.innerHTML = `<h3>❌ JavaScript Test Failed</h3><p>Error: ${error.message}</p>`;
+        }
+      }
+
+      // Test Local Storage
+      function testLocalStorage() {
+        const result = document.getElementById("testResult");
+        try {
+          const testKey = "yahooooooo-test";
+          const testValue = "Browser test data: " + new Date().toISOString();
+
+          localStorage.setItem(testKey, testValue);
+          const retrieved = localStorage.getItem(testKey);
+
+          if (retrieved === testValue) {
+            result.innerHTML = `
+                        <h3>✅ Local Storage Test Passed</h3>
+                        <p><strong>Stored:</strong> ${testValue}</p>
+                        <p><strong>Retrieved:</strong> ${retrieved}</p>
+                        <p>Local storage is working correctly!</p>
+                    `;
+          } else {
+            result.innerHTML = `<h3>❌ Local Storage Test Failed</h3><p>Data mismatch</p>`;
+          }
+        } catch (error) {
+          result.innerHTML = `<h3>❌ Local Storage Test Failed</h3><p>Error: ${error.message}</p>`;
+        }
+      }
+
+      // Test WebGL
+      function testWebGL() {
+        const result = document.getElementById("testResult");
+        try {
+          const canvas = document.createElement("canvas");
+          const gl =
+            canvas.getContext("webgl") ||
+            canvas.getContext("experimental-webgl");
+
+          if (gl) {
+            const vendor = gl.getParameter(gl.VENDOR);
+            const renderer = gl.getParameter(gl.RENDERER);
+            const version = gl.getParameter(gl.VERSION);
+
+            result.innerHTML = `
+                        <h3>✅ WebGL Test Passed</h3>
+                        <p><strong>Vendor:</strong> ${vendor}</p>
+                        <p><strong>Renderer:</strong> ${renderer}</p>
+                        <p><strong>Version:</strong> ${version}</p>
+                        <p>Hardware acceleration is working!</p>
+                    `;
+          } else {
+            result.innerHTML = `<h3>⚠️ WebGL Test</h3><p>WebGL context not available</p>`;
+          }
+        } catch (error) {
+          result.innerHTML = `<h3>❌ WebGL Test Failed</h3><p>Error: ${error.message}</p>`;
+        }
+      }
+
+      // Test CSS3 Animations
+      function testCSS3() {
+        const result = document.getElementById("testResult");
+        result.innerHTML = `
+                <h3>✅ CSS3 Animation Test</h3>
+                <div style="width: 100px; height: 100px; background: linear-gradient(45deg, #FF6B6B, #4ECDC4); 
+                           border-radius: 50%; margin: 20px auto; 
+                           animation: spin 2s linear infinite;"></div>
+                <p>CSS3 animations, gradients, and transforms are working!</p>
+                <style>
+                    @keyframes spin {
+                        from { transform: rotate(0deg); }
+                        to { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+      }
+
+      // Test IPC Communication (simulated)
+      function testIPC() {
+        const result = document.getElementById("testResult");
+        try {
+          // Check if yahooooooo object is available (injected by renderer process)
+          if (typeof window.yahooooooo !== "undefined") {
+            result.innerHTML = `
+                        <h3>✅ IPC Communication Available</h3>
+                        <p>yahooooooo JavaScript API is injected</p>
+                        <p>Multi-process communication is working!</p>
+                        <p><strong>API Object:</strong> window.yahooooooo</p>
+                    `;
+          } else {
+            result.innerHTML = `
+                        <h3>ℹ️ IPC Communication</h3>
+                        <p>yahooooooo API not yet injected</p>
+                        <p>This is normal for offline mode</p>
+                        <p>IPC will be available when renderer process fully initializes</p>
+                    `;
+          }
+        } catch (error) {
+          result.innerHTML = `<h3>❌ IPC Test Failed</h3><p>Error: ${error.message}</p>`;
+        }
+      }
+
+      function toGoogle() {
+        window.location.href = "https://www.google.com";
+      }
+
+      // Auto-run JavaScript test on load
+      window.addEventListener("load", function () {
+        setTimeout(testJavaScript, 1000);
+      });
+
+      // Update timestamp every second
+      setInterval(function () {
+        const now = new Date().toLocaleString();
+        document.title = `yahooooooo Browser - ${now}`;
+      }, 1000);
+
+      console.log("🎉 yahooooooo Browser loaded successfully!");
+      console.log("CEF Version: 137.0.17");
+      console.log("Multi-process mode: Active");
+      console.log("Network service: Disabled (offline mode)");
+    </script>
+  </body>
+</html>

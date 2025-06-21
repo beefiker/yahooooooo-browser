@@ -8,7 +8,7 @@
 
 /**
  * Main application class that implements CefApp interface
- * Handles browser process setup and configuration
+ * Handles browser process setup, configuration, and multi-process communication
  */
 class App : public CefApp, public CefBrowserProcessHandler {
 public:
@@ -20,6 +20,8 @@ public:
         return this;
     }
 
+    void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) override;
+
     // CefBrowserProcessHandler methods
     void OnBeforeCommandLineProcessing(
         const CefString& process_type,
@@ -27,8 +29,15 @@ public:
     
     void OnContextInitialized() override;
 
-    // Optional: Handle render process creation
-    CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
+    void OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) override;
+
+    void OnScheduleMessagePumpWork(int64_t delay_ms) override;
+    
+    // CEF 137 requirement - provide default client for Chrome style UI
+    CefRefPtr<CefClient> GetDefaultClient() override;
+
+    // Multi-process communication (handled in client, not app)
+    // bool OnProcessMessageReceived is handled in the Client class
 
 private:
     IMPLEMENT_REFCOUNTING(App);

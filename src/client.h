@@ -72,11 +72,20 @@ public:
                        bool user_gesture,
                        bool is_redirect) override;
 
+    // Multi-process communication
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                 CefRefPtr<CefFrame> frame,
+                                 CefProcessId source_process,
+                                 CefRefPtr<CefProcessMessage> message) override;
+
     // Get the main browser instance
     CefRefPtr<CefBrowser> GetMainBrowser() { return main_browser_; }
     
     // Close all browsers and shut down
     void CloseAllBrowsers(bool force_close);
+    
+    // Test inter-process communication
+    void TestInterProcessCommunication();
 
 private:
     // The main browser window
